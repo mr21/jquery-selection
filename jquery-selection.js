@@ -1,5 +1,5 @@
 /*
-	jQuery - selection - 1.0
+	jQuery - selection - 1.1
 	https://github.com/Mr21/jquery-selection
 */
 
@@ -16,6 +16,7 @@ $.plugin_selection.obj = function(jq_parent, options) {
 	this.selectableClass = options.selectableClass || 'jqselection-selectable';
 	this.selectedClass   = options.selectedClass   || 'jqselection-selected';
 	this.numberClass     = options.numberClass     || 'jqselection-number';
+	this.app = window;
 	this.keyCtrl = false;
 	this.keyCtrlLocked = false;
 	this.keyShiftEnable = true;
@@ -32,16 +33,13 @@ $.plugin_selection.obj = function(jq_parent, options) {
 
 $.plugin_selection.obj.prototype = {
 	// public:
-	getArraySelection: function() {
-		return this.ar_elSelected;
-	},
-	onElementsAdded: function(cb) {
-		this.cbAdd = cb;
-		return this;
-	},
-	onElementsRemoved: function(cb) {
-		this.cbRem = cb;
-		return this;
+	getArraySelection: function() { return this.ar_elSelected; },
+	onElementsAdded:   function(cb) { this.cbAdd = cb; return this; },
+	onElementsRemoved: function(cb) { this.cbRem = cb; return this; },
+	applyThis: function(app) {
+		if (app !== undefined)
+			return this.app = app, this;
+		return this.app;
 	},
 	lockCtrlKey: function() {
 		this.keyCtrl =
@@ -74,7 +72,7 @@ $.plugin_selection.obj.prototype = {
 					return '<span class="'+ self.numberClass +'">'+ a.push(this) +'</span>';
 				});
 			if (this.cbAdd)
-				this.cbAdd.call(jq_elems);
+				this.cbAdd.call(this.app, jq_elems);
 		}
 	},
 	unselect: function(elems) {
@@ -84,7 +82,7 @@ $.plugin_selection.obj.prototype = {
 			.children('.' + this.numberClass)
 				.remove();
 		if (this.cbRem)
-			this.cbRem.call(jq_elems);
+			this.cbRem.call(this.app, jq_elems);
 	},
 	unselectOne: function(elem) {
 		var a = this.ar_elSelected;

@@ -8,21 +8,21 @@ $(function() {
 	var
 		jq_list = $('#demo .list ol'),
 		selection = $.plugin_selection($('#demo .colors')),
-		elemsSelected = selection.getArraySelection(); // here you can access to the dynamique list of the actual selectionned elements.
+		elemsSelected = selection.getArraySelection();
 
 	selection
 		// .lockCtrlKey()
 		// .disableShiftKey()
-		.onElementsAdded(function() { // in this function the `this` is the a jQuery object.
+		.onElementsAdded(function(jq_elems) {
 			var str = '.onElementsAdded() <----';
-			$.each(this, function() {
+			$.each(jq_elems, function() {
 				str += ' ' + getColor(this);
 			});
 			console.log(str);
 		})
-		.onElementsRemoved(function() { // in this function the `this` is the a jQuery object.
+		.onElementsRemoved(function(jq_elems) {
 			var str = '.onElementsRemoved() <--';
-			$.each(this, function() {
+			$.each(jq_elems, function() {
 				str += ' ' + getColor(this);
 			});
 			console.log(str);
