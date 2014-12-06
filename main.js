@@ -1,13 +1,16 @@
 $(function() {
 
+	if (top.location === self.location)
+		location = 'http://mr21.fr/jquery-selection';
+
 	function getColor(el) {
 		var style = el.getAttribute('style');
 		return style.substr(style.indexOf('#'));
 	}
 
 	var
-		jq_list = $('#demo .list ol'),
-		selection = $.plugin_selection($('#demo .colors')),
+		jq_list = $('.list ol'),
+		selection = $.plugin_selection($('.colors')),
 		elemsSelected = selection.getArraySelection();
 
 	selection
