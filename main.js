@@ -1,7 +1,6 @@
 $(function() {
 
-	if (top.location === self.location)
-		location = 'http://mr21.fr/jquery-selection';
+	$('#moreAt')[top.location === self.location ? 'show' : 'remove']();
 
 	function getColor(el) {
 		var style = el.getAttribute('style');
