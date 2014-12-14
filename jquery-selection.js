@@ -1,5 +1,5 @@
 /*
-	jQuery - selection - 1.1
+	jQuery - selection - 1.2
 	https://github.com/Mr21/jquery-selection
 */
 
@@ -63,13 +63,13 @@ $.plugin_selection.obj.prototype = {
 	// private:
 	select: function(elems) {
 		if (elems.length) {
-			var	self = this,
+			var	that = this,
 				jq_elems = $(elems),
 				a = this.ar_elSelected;
 			jq_elems
 				.addClass(this.selectedClass)
 				.append(function() {
-					return '<span class="'+ self.numberClass +'">'+ a.push(this) +'</span>';
+					return '<span class="'+ that.numberClass +'">'+ a.push(this) +'</span>';
 				});
 			if (this.cbAdd)
 				this.cbAdd.call(this.app, jq_elems);
@@ -129,8 +129,8 @@ $.plugin_selection.obj.prototype = {
 		}
 	},
 	setChildrenEvents: function(jq_elems) {
-		function up() { self.elem_mouseLeft = false; }
-		var self = this;
+		var that = this;
+		function up() { that.elem_mouseLeft = false; }
 		this.ar_jqSelectable = this.jq_parent.find('.' + this.selectableClass);
 		jq_elems
 			.each(function() {
@@ -143,57 +143,65 @@ $.plugin_selection.obj.prototype = {
 						.mousedown(function(e) {
 							if (e.button === 0) {
 								e.preventDefault();
-								self.elem_mouseLeft = true;
-								self.click(jq_this);
+								that.elem_mouseLeft = true;
+								that.click(jq_this);
 							}
 						});
 				}
 			});
 	},
 	setParentEvents: function() {
-		var self = this;
+		var that = this;
 		this.jq_parent.on('DOMNodeInserted', function(e) {
 			var	jq_elem = $(e.target);
-			self.setChildrenEvents(
-				jq_elem.hasClass(self.selectableClass)
+			that.setChildrenEvents(
+				jq_elem.hasClass(that.selectableClass)
 					? jq_elem
-					: jq_elem.find('.' + self.selectableClass)
+					: jq_elem.find('.' + that.selectableClass)
 			);
 		});
 	},
 	setWindowEvents: function() {
-		var self = this;
+		var	that = this,
+			docs = [];
 
 		$(window).blur(function() {
-			self.keyShift = false;
-			if (!self.keyCtrlLocked)
-				self.keyCtrl = false;
+			that.keyShift = false;
+			if (!that.keyCtrlLocked)
+				that.keyCtrl = false;
 		});
 
 		function key(k, val) {
 			switch (k) {
 				case 224: case 91: case 93: case 17:
-					if (!self.keyCtrlLocked)
-						self.keyCtrl = val;
+					if (!that.keyCtrlLocked)
+						that.keyCtrl = val;
 					break;
 				case 16:
-					if (self.keyShiftEnable)
-						self.keyShift = val;
+					if (that.keyShiftEnable)
+						that.keyShift = val;
 					break;
 			}
 		}
 
-		$(document)
+		try {
+			var win = window;
+			do {
+				docs.push(win.document);
+			} while(win !== win.parent && (win = win.parent));
+		} catch(e) {}
+
+		$(docs)
 			.keydown(function(e) { key(e.keyCode, true);  })
 			.keyup  (function(e) { key(e.keyCode, false); })
 			.mousedown(function(e) {
-				if (e.button === 0 && !self.elem_mouseLeft && !self.keyCtrl && !self.keyShift)
-					self.window_mouseLeft = true;
+				if (e.button === 0 && !that.elem_mouseLeft && !that.keyCtrl && !that.keyShift)
+					that.window_mouseLeft = true;
 			})
 			.mouseup(function(e) {
-				if (e.button === 0 && self.window_mouseLeft) {
-					self.window_mouseLeft = false;
-					self.unselectAll();
+				if (e.button === 0 && that.window_mouseLeft) {
+					that.window_mouseLeft = false;
+					that.unselectAll();
 				}
 			});
 	}
